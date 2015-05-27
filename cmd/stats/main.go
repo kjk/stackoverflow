@@ -14,7 +14,7 @@ func readUsers(dataDir string) []stackoverflow.User {
 	fmt.Printf("readUsers: dir=%s\n", dir)
 	path := filepath.Join(dir, "Users.xml")
 	timeStart := time.Now()
-	ur, err := NewUsersReader(path)
+	ur, err := stackoverflow.NewUsersReader(path)
 	if err != nil {
 		fmt.Printf("readUsers: NewUsersReader() failed with %s\n", err)
 		return nil
@@ -35,7 +35,7 @@ func readPosts(dataDir string) []stackoverflow.Post {
 	fmt.Printf("readPosts: dir=%s\n", dir)
 	path := filepath.Join(dir, "Posts.xml")
 	timeStart := time.Now()
-	ur, err := NewPostsReader(path)
+	ur, err := stackoverflow.NewPostsReader(path)
 	if err != nil {
 		fmt.Printf("readPosts: NewPostsReader() failed with %s\n", err)
 		return nil
@@ -51,9 +51,9 @@ func readPosts(dataDir string) []stackoverflow.Post {
 	nAnswers := 0
 	tags := map[string]int{}
 	for _, p := range res {
-		if p.PostTypeID == PostTypeQuestion {
+		if p.PostTypeID == stackoverflow.PostTypeQuestion {
 			nQuestions++
-		} else if p.PostTypeID == PostTypeAnswer {
+		} else if p.PostTypeID == stackoverflow.PostTypeAnswer {
 			nAnswers++
 		}
 		for _, tag := range p.Tags {
@@ -69,7 +69,7 @@ func readComments(dataDir string) []stackoverflow.Comment {
 	fmt.Printf("readComments: dir=%s\n", dir)
 	path := filepath.Join(dir, "Comments.xml")
 	timeStart := time.Now()
-	ur, err := NewCommentsReader(path)
+	ur, err := stackoverflow.NewCommentsReader(path)
 	if err != nil {
 		fmt.Printf("readComments: NewCommentsReader() failed with %s\n", err)
 		return nil
@@ -90,7 +90,7 @@ func readTags(dataDir string) []stackoverflow.Tag {
 	fmt.Printf("readTags: dir=%s\n", dir)
 	path := filepath.Join(dir, "Tags.xml")
 	timeStart := time.Now()
-	ur, err := NewTagsReader(path)
+	ur, err := stackoverflow.NewTagsReader(path)
 	if err != nil {
 		fmt.Printf("readTags: NewTagsReader() failed with %s\n", err)
 		return nil
@@ -111,7 +111,7 @@ func readBadges(dataDir string) []stackoverflow.Badge {
 	fmt.Printf("readBadges: dir=%s\n", dir)
 	path := filepath.Join(dir, "Badges.xml")
 	timeStart := time.Now()
-	ur, err := NewBadgesReader(path)
+	ur, err := stackoverflow.NewBadgesReader(path)
 	if err != nil {
 		fmt.Printf("readBadges: NewBadgesReader() failed with %s\n", err)
 		return nil
@@ -132,7 +132,7 @@ func readPostHistory(dataDir string) []stackoverflow.PostHistory {
 	fmt.Printf("readPostHistory: dir=%s\n", dir)
 	path := filepath.Join(dir, "PostHistory.xml")
 	timeStart := time.Now()
-	ur, err := NewPostHistoryReader(path)
+	ur, err := stackoverflow.NewPostHistoryReader(path)
 	if err != nil {
 		fmt.Printf("readPostHistory: NewPostHistoryReader() failed with %s\n", err)
 		return nil
@@ -153,7 +153,7 @@ func readPostLinks(dataDir string) []stackoverflow.PostLink {
 	fmt.Printf("readPostLinks: dir=%s\n", dir)
 	path := filepath.Join(dir, "PostLinks.xml")
 	timeStart := time.Now()
-	ur, err := NewPostLinksReader(path)
+	ur, err := stackoverflow.NewPostLinksReader(path)
 	if err != nil {
 		fmt.Printf("readPostLinks: NewPostHistoryReader() failed with %s\n", err)
 		return nil
@@ -174,7 +174,7 @@ func readVotes(dataDir string) []stackoverflow.Vote {
 	fmt.Printf("readVotes: dir=%s\n", dir)
 	path := filepath.Join(dir, "Votes.xml")
 	timeStart := time.Now()
-	ur, err := NewVotesReader(path)
+	ur, err := stackoverflow.NewVotesReader(path)
 	if err != nil {
 		fmt.Printf("readVotes: NewPostHistoryReader() failed with %s\n", err)
 		return nil

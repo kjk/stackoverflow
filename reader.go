@@ -2,7 +2,6 @@ package stackoverflow
 
 import (
 	"encoding/xml"
-	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -10,6 +9,9 @@ import (
 )
 
 const (
+	// TimeFormat is how time is formatted in .xml files
+	TimeFormat = "2006-01-02T15:04:05.999999999"
+
 	typeBadges      = "badges"
 	typeComments    = "comments"
 	typePostHistory = "posthistory"
@@ -115,7 +117,7 @@ func getTokenIgnoreCharData(d *xml.Decoder) (xml.Token, error) {
 }
 
 func decodeTime(s string) (time.Time, error) {
-	return time.Parse("2006-01-02T15:04:05.999999999", s)
+	return time.Parse(TimeFormat, s)
 }
 
 func newReader(path string, typ string) (*Reader, error) {
@@ -123,12 +125,6 @@ func newReader(path string, typ string) (*Reader, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer func() {
-		if f != nil {
-			f.Close()
-		}
-	}()
-
 	r := &Reader{
 		f:   f,
 		d:   xml.NewDecoder(f),
@@ -136,31 +132,35 @@ func newReader(path string, typ string) (*Reader, error) {
 	}
 	t, err := getTokenIgnoreCharData(r.d)
 	if err != nil {
+		r.Close()
 		return nil, err
 	}
 	// skip <?xml ...>
 	if isProcInst(t) {
 		t, err = getTokenIgnoreCharData(r.d)
 		if err != nil {
+			r.Close()
 			return nil, err
 		}
 	}
 	if !isStartElement(t, r.typ) {
-		fmt.Printf("NewUserReader: invalid first token: %#v\n", t)
-		f.Close()
-		return nil, errors.New("invalid first token")
+		r.Close()
+		return nil, fmt.Errorf("invalid first token '%#v', expected xml.StartElement '%s'", t, r.typ)
 	}
-	r.Next()
-	if r.err != nil {
-		return nil, r.err
-	}
-	f = nil
 	return r, nil
 }
 
 // Err returns potential error
 func (r *Reader) Err() error {
 	return r.err
+}
+
+// Close closes a reader
+func (r *Reader) Close() {
+	if !r.finished {
+		r.f.Close()
+		r.finished = true
+	}
 }
 
 // Next advances to next User record. Returns false on end or
@@ -173,6 +173,7 @@ func (r *Reader) Next() bool {
 		if r.err != nil {
 			r.f.Close()
 			r.f = nil
+			r.finished = true
 		}
 	}()
 
@@ -191,7 +192,7 @@ func (r *Reader) Next() bool {
 	}
 
 	if isEndElement(t, r.typ) {
-		r.finished = true
+		r.Close()
 		return false
 	}
 

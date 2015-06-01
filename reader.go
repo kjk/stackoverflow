@@ -3,6 +3,7 @@ package stackoverflow
 import (
 	"encoding/xml"
 	"fmt"
+	"io"
 	"os"
 	"strings"
 	"time"
@@ -24,7 +25,7 @@ const (
 
 // Reader is for iteratively reading records from xml file
 type Reader struct {
-	f           *os.File
+	r           io.Reader
 	d           *xml.Decoder
 	typ         string
 	User        User
@@ -39,44 +40,84 @@ type Reader struct {
 	finished    bool
 }
 
+// NewBadgesReaderFromFile returns a new reader for Badges.xml file
+func NewBadgesReaderFromFile(path string) (*Reader, error) {
+	return newReaderFromFile(path, typeBadges)
+}
+
+// NewCommentsReaderFromFile returns a new reader for Comments.xml file
+func NewCommentsReaderFromFile(path string) (*Reader, error) {
+	return newReaderFromFile(path, typeComments)
+}
+
+// NewPostHistoryReaderFromFile returns a new reader for PostHistory.xml file
+func NewPostHistoryReaderFromFile(path string) (*Reader, error) {
+	return newReaderFromFile(path, typePostHistory)
+}
+
+// NewPostLinksReaderFromFile returns a new reader for PostLinks.xml file
+func NewPostLinksReaderFromFile(path string) (*Reader, error) {
+	return newReaderFromFile(path, typePostLinks)
+}
+
+// NewPostsReaderFromFile returns a new reader for Posts.xml file
+func NewPostsReaderFromFile(path string) (*Reader, error) {
+	return newReaderFromFile(path, typePosts)
+}
+
+// NewTagsReaderFromFile returns a new reader for Comments.xml file
+func NewTagsReaderFromFile(path string) (*Reader, error) {
+	return newReaderFromFile(path, typeTags)
+}
+
+// NewUsersReaderFromFile returns a new reader for Users.xml file
+func NewUsersReaderFromFile(path string) (*Reader, error) {
+	return newReaderFromFile(path, typeUsers)
+}
+
+// NewVotesReaderFromFile returns a new reader for Votes.xml file
+func NewVotesReaderFromFile(path string) (*Reader, error) {
+	return newReaderFromFile(path, typeVotes)
+}
+
 // NewBadgesReader returns a new reader for Badges.xml file
-func NewBadgesReader(path string) (*Reader, error) {
-	return newReader(path, typeBadges)
+func NewBadgesReader(r io.Reader) (*Reader, error) {
+	return newReader(r, typeBadges)
 }
 
 // NewCommentsReader returns a new reader for Comments.xml file
-func NewCommentsReader(path string) (*Reader, error) {
-	return newReader(path, typeComments)
+func NewCommentsReader(r io.Reader) (*Reader, error) {
+	return newReader(r, typeComments)
 }
 
 // NewPostHistoryReader returns a new reader for PostHistory.xml file
-func NewPostHistoryReader(path string) (*Reader, error) {
-	return newReader(path, typePostHistory)
+func NewPostHistoryReader(r io.Reader) (*Reader, error) {
+	return newReader(r, typePostHistory)
 }
 
 // NewPostLinksReader returns a new reader for PostLinks.xml file
-func NewPostLinksReader(path string) (*Reader, error) {
-	return newReader(path, typePostLinks)
+func NewPostLinksReader(r io.Reader) (*Reader, error) {
+	return newReader(r, typePostLinks)
 }
 
 // NewPostsReader returns a new reader for Posts.xml file
-func NewPostsReader(path string) (*Reader, error) {
-	return newReader(path, typePosts)
+func NewPostsReader(r io.Reader) (*Reader, error) {
+	return newReader(r, typePosts)
 }
 
 // NewTagsReader returns a new reader for Comments.xml file
-func NewTagsReader(path string) (*Reader, error) {
-	return newReader(path, typeTags)
+func NewTagsReader(r io.Reader) (*Reader, error) {
+	return newReader(r, typeTags)
 }
 
 // NewUsersReader returns a new reader for Users.xml file
-func NewUsersReader(path string) (*Reader, error) {
-	return newReader(path, typeUsers)
+func NewUsersReader(r io.Reader) (*Reader, error) {
+	return newReader(r, typeUsers)
 }
 
 // NewVotesReader returns a new reader for Votes.xml file
-func NewVotesReader(path string) (*Reader, error) {
-	return newReader(path, typeVotes)
+func NewVotesReader(r io.Reader) (*Reader, error) {
+	return newReader(r, typeVotes)
 }
 
 func isCharData(t xml.Token) bool {
@@ -120,14 +161,10 @@ func decodeTime(s string) (time.Time, error) {
 	return time.Parse(TimeFormat, s)
 }
 
-func newReader(path string, typ string) (*Reader, error) {
-	f, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
+func newReader(rd io.Reader, typ string) (*Reader, error) {
 	r := &Reader{
-		f:   f,
-		d:   xml.NewDecoder(f),
+		r:   rd,
+		d:   xml.NewDecoder(rd),
 		typ: typ,
 	}
 	t, err := getTokenIgnoreCharData(r.d)
@@ -150,6 +187,14 @@ func newReader(path string, typ string) (*Reader, error) {
 	return r, nil
 }
 
+func newReaderFromFile(path string, typ string) (*Reader, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	return newReader(f, typ)
+}
+
 // Err returns potential error
 func (r *Reader) Err() error {
 	return r.err
@@ -157,8 +202,11 @@ func (r *Reader) Err() error {
 
 // Close closes a reader
 func (r *Reader) Close() {
-	if !r.finished {
-		r.f.Close()
+	if !r.finished && r.r != nil {
+		if rc, ok := r.r.(io.ReadCloser); ok {
+			rc.Close()
+		}
+		r.r = nil
 		r.finished = true
 	}
 }
@@ -171,9 +219,7 @@ func (r *Reader) Next() bool {
 
 	defer func() {
 		if r.err != nil {
-			r.f.Close()
-			r.f = nil
-			r.finished = true
+			r.Close()
 		}
 	}()
 

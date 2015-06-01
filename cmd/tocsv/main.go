@@ -76,7 +76,7 @@ func userToCsvRecord(u *stackoverflow.User, w *textWriter, rec []string) error {
 func usersToCsv(path string) error {
 	timeStart := time.Now()
 	n := 0
-	r, err := stackoverflow.NewUsersReader(path)
+	r, err := stackoverflow.NewUsersReaderFromFile(path)
 	if err != nil {
 		return fmt.Errorf("usersToCsv: NewUsersReader() failed with %s\n", err)
 	}

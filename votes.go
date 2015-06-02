@@ -8,7 +8,22 @@ import (
 	"time"
 )
 
-// TODO: describe VoteTypeID
+// http://blog.stackoverflow.com/2009/06/stack-overflow-creative-commons-data-dump/#comment-24147
+const (
+	VoteAcceptedByOriginator = 1
+	VoteUpMod                = 2
+	VoteDownMod              = 3
+	VoteOffensive            = 4
+	VoteFavorite             = 5
+	VoteClose                = 6
+	VoteReopen               = 7
+	VoteBountyStart          = 8
+	VoteBountyClose          = 9
+	VoteDeletion             = 10
+	VoteUndeletion           = 11
+	VoteSpam                 = 12
+	VoteInformModerator      = 13
+)
 
 // Vote describes a vote
 type Vote struct {

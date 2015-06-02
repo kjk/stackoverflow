@@ -51,9 +51,9 @@ func readPosts(dataDir string) []stackoverflow.Post {
 	nAnswers := 0
 	tags := map[string]int{}
 	for _, p := range res {
-		if p.PostTypeID == stackoverflow.PostTypeQuestion {
+		if p.PostTypeID == stackoverflow.PostQuestion {
 			nQuestions++
-		} else if p.PostTypeID == stackoverflow.PostTypeAnswer {
+		} else if p.PostTypeID == stackoverflow.PostAnswer {
 			nAnswers++
 		}
 		for _, tag := range p.Tags {

@@ -9,31 +9,23 @@ import (
 	"time"
 )
 
+// http://meta.stackexchange.com/questions/2677/database-schema-documentation-for-the-public-data-dump-and-sede?rq=1
 const (
-	// PostTypeQuestion denotes a post that is a question
-	PostTypeQuestion = 1
-	// PostTypeAnswer denotes a post that is an answer
-	PostTypeAnswer = 2
-	// PostType3 denotes a post whose type I don't understand
-	PostType3 = 3
-	// PostTypeExcerpt denotes an excerpt post.
-	// It could be tag description post.
-	PostTypeExcerpt = 4
-	// PostTypeWiki denotes a wiki post
-	PostTypeWiki = 5
-	// PostType6 denotes a post whose type I don't understand
-	// Is it site description?
-	PostType6 = 6
-	// PostType7 denotes a post whose type I don't understand
-	// Is it site description?
-	PostType7 = 7
+	PostQuestion            = 1
+	PostAnswer              = 2
+	PostOrphanedTagWiki     = 3
+	PostTagWikiExcerpt      = 4
+	PostTagWiki             = 5
+	PostModeratorNomination = 6
+	PostWikiPlaceholder     = 7
+	PostPrivilegeWiki       = 8
 )
 
 // Post describes a post
 type Post struct {
 	ID                    int
 	PostTypeID            int
-	ParentID              int // for PostTypeAnswer
+	ParentID              int // for PostAnswer
 	AcceptedAnswerID      int
 	CreationDate          time.Time
 	Score                 int
@@ -122,7 +114,7 @@ func decodePostAttr(attr xml.Attr, p *Post) error {
 }
 
 func validatePost(p *Post) {
-	if p.PostTypeID < 1 || p.PostTypeID > 7 {
+	if p.PostTypeID < 1 || p.PostTypeID > 8 {
 		log.Fatalf("invalid PostTypeID: %d\n", p.PostTypeID)
 	}
 }

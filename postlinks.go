@@ -8,6 +8,12 @@ import (
 	"time"
 )
 
+// http://meta.stackexchange.com/questions/2677/database-schema-documentation-for-the-public-data-dump-and-sede?rq=1
+const (
+	LinkTypeLinked    = 1
+	LinkTypeDuplicate = 2
+)
+
 // PostLink describes links in a post
 type PostLink struct {
 	ID            int

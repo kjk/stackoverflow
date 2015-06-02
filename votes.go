@@ -9,28 +9,33 @@ import (
 )
 
 // http://blog.stackoverflow.com/2009/06/stack-overflow-creative-commons-data-dump/#comment-24147
+// http://meta.stackexchange.com/questions/2677/database-schema-documentation-for-the-public-data-dump-and-sede?rq=1
+// http://data.stackexchange.com/stackoverflow/query/102390/vote-types
 const (
-	VoteAcceptedByOriginator = 1
-	VoteUpMod                = 2
-	VoteDownMod              = 3
-	VoteOffensive            = 4
-	VoteFavorite             = 5
-	VoteClose                = 6
-	VoteReopen               = 7
-	VoteBountyStart          = 8
-	VoteBountyClose          = 9
-	VoteDeletion             = 10
-	VoteUndeletion           = 11
-	VoteSpam                 = 12
-	VoteInformModerator      = 13
+	VoteAcceptedByOriginator   = 1
+	VoteUpMod                  = 2
+	VoteDownMod                = 3
+	VoteOffensive              = 4
+	VoteFavorite               = 5
+	VoteClose                  = 6
+	VoteReopen                 = 7
+	VoteBountyStart            = 8
+	VoteBountyClose            = 9
+	VoteDeletion               = 10
+	VoteUndeletion             = 11
+	VoteSpam                   = 12
+	VoteModeratorReview        = 15
+	VoteApproveEditoSuggestion = 16
 )
 
 // Vote describes a vote
 type Vote struct {
-	ID           int
-	PostID       int
-	VoteTypeID   int
-	UserID       int
+	ID         int
+	PostID     int
+	VoteTypeID int
+	// only present if VoteTypeID is 5 or 8
+	UserID int
+	// only present if VoteTypeID is 8 or 9
 	BountyAmount int
 	CreationDate time.Time
 }

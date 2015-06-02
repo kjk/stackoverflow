@@ -8,6 +8,41 @@ import (
 	"time"
 )
 
+// http://meta.stackexchange.com/questions/2677/database-schema-documentation-for-the-public-data-dump-and-sede?rq=1
+const (
+	HistoryInitialTitle                 = 1
+	HistoryInitialBody                  = 2
+	HistoryInitialTags                  = 3
+	HistoryEditTitle                    = 4
+	HistoryEditBody                     = 5
+	HistoyrEditTags                     = 6
+	HistoryRollbackTitle                = 7
+	HistoryRollbackBody                 = 8
+	HistoryRollbackTags                 = 9
+	HistoryPostClosed                   = 10
+	HistoryPostReopened                 = 11
+	HistoryPostDeleted                  = 12
+	HistoryPostUndeleted                = 13
+	HistoryPostLocked                   = 14
+	HistoryPostUnlocked                 = 15
+	HistoryCommunityOwned               = 16
+	HistoryPostMigrated                 = 17
+	HistoryQuestionMerged               = 18
+	HistoryQuestionProtected            = 19
+	HistoryQuestionUnprotected          = 20
+	HistoryPostDisassociated            = 21
+	HistoryQuestionUnmerged             = 22
+	HistorySuggestedEditApplied         = 24
+	HistoryPostTweeted                  = 25
+	HistoryCommentDiscussionMovedToChat = 26
+	HistoryPostNoticeAdded              = 33
+	HistoryPostNoticeRemoved            = 34
+	HistoryPostMigratedAway             = 35 // replaces id 17
+	HistoryPostMigratedHere             = 36 // replaces id 17
+	HistoryPostMergeSource              = 37
+	HistoryPostMergeDestination         = 38
+)
+
 // PostHistory describes history of a post
 type PostHistory struct {
 	ID                int
@@ -17,8 +52,10 @@ type PostHistory struct {
 	CreationDate      time.Time
 	UserID            int
 	UserDisplayName   string
-	Text              string
-	Comment           string
+	// if PostHistoryTypeID is 10, 11, 12, 13, 14, 15, this is JSON
+	// with users who voted
+	Text    string
+	Comment string
 }
 
 func decodePostHistoryAttr(attr xml.Attr, h *PostHistory) error {

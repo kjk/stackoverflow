@@ -48,7 +48,7 @@ type Post struct {
 
 var nTagsToShow = 0
 
-func decodeTags(s string) ([]string, error) {
+func decodeTags(s string) []string {
 	// tags are in the format: <foo><bar>
 	s = strings.TrimPrefix(s, "<")
 	s = strings.TrimSuffix(s, ">")
@@ -57,7 +57,7 @@ func decodeTags(s string) ([]string, error) {
 		nTagsToShow--
 		fmt.Printf("tags: '%s' => %v\n", s, tags)
 	}
-	return tags, nil
+	return tags
 }
 
 func decodePostAttr(attr xml.Attr, p *Post) error {
@@ -96,7 +96,7 @@ func decodePostAttr(attr xml.Attr, p *Post) error {
 	case "title":
 		p.Title = v
 	case "tags":
-		p.Tags, err = decodeTags(v)
+		p.Tags = decodeTags(v)
 	case "answercount":
 		p.AnswerCount, err = strconv.Atoi(v)
 	case "commentcount":

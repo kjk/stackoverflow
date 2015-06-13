@@ -54,7 +54,10 @@ type PostHistory struct {
 	UserDisplayName   string
 	// if PostHistoryTypeID is 10, 11, 12, 13, 14, 15, this is JSON
 	// with users who voted
-	Text    string
+	Text string
+	// if PostHistoryTypeID is HistoryInitialTags or HistoyrEditTags
+	// or HistoryRollbackTags, this is a decoded version of tags
+	Tags    []string
 	Comment string
 }
 
@@ -86,14 +89,29 @@ func decodePostHistoryAttr(attr xml.Attr, h *PostHistory) error {
 	}
 	return err
 }
-
 func decodePostHistoryRow(t xml.Token, h *PostHistory) error {
 	// have been checked before that this is "row" element
+
+	// we reuse the struct, so reset to initial state
+	h.RevisionGUID = ""
+	h.CreationDate = time.Time{}
+	h.UserID = 0
+	h.UserDisplayName = ""
+	h.Text = ""
+	h.Tags = nil
+	h.Comment = ""
+
 	e, _ := t.(xml.StartElement)
 	for _, attr := range e.Attr {
 		err := decodePostHistoryAttr(attr, h)
 		if err != nil {
 			return err
+		}
+	}
+	switch h.PostHistoryTypeID {
+	case HistoryInitialTags, HistoyrEditTags, HistoryRollbackTags:
+		if h.Text != "" {
+			h.Tags = decodeTags(h.Text)
 		}
 	}
 	return nil

@@ -37,6 +37,7 @@ func decodeBadgeAttr(attr xml.Attr, b *Badge) error {
 
 func decodeBadgeRow(t xml.Token, b *Badge) error {
 	// have been checked before that this is "row" element
+	*b = Badge{}
 	e, _ := t.(xml.StartElement)
 	for _, attr := range e.Attr {
 		err := decodeBadgeAttr(attr, b)

@@ -39,6 +39,7 @@ func decodeTagAttr(attr xml.Attr, t *Tag) error {
 
 func decodeTagRow(t xml.Token, tag *Tag) error {
 	// have been checked before that this is "row" element
+	*tag = Tag{}
 	e, _ := t.(xml.StartElement)
 	for _, attr := range e.Attr {
 		err := decodeTagAttr(attr, tag)

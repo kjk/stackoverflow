@@ -46,6 +46,7 @@ func decodeCommentAttr(attr xml.Attr, c *Comment) error {
 
 func decodeCommentRow(t xml.Token, c *Comment) error {
 	// have been checked before that this is "row" element
+	*c = Comment{}
 	e, _ := t.(xml.StartElement)
 	for _, attr := range e.Attr {
 		err := decodeCommentAttr(attr, c)

@@ -92,15 +92,7 @@ func decodePostHistoryAttr(attr xml.Attr, h *PostHistory) error {
 func decodePostHistoryRow(t xml.Token, h *PostHistory) error {
 	// have been checked before that this is "row" element
 
-	// we reuse the struct, so reset to initial state
-	h.RevisionGUID = ""
-	h.CreationDate = time.Time{}
-	h.UserID = 0
-	h.UserDisplayName = ""
-	h.Text = ""
-	h.Tags = nil
-	h.Comment = ""
-
+	*h = PostHistory{}
 	e, _ := t.(xml.StartElement)
 	for _, attr := range e.Attr {
 		err := decodePostHistoryAttr(attr, h)

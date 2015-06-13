@@ -67,6 +67,7 @@ func decodeUserAttr(attr xml.Attr, u *User) error {
 
 func decodeUserRow(t xml.Token, u *User) error {
 	// have been checked before that this is "row" element
+	*u = User{}
 	e, _ := t.(xml.StartElement)
 	for _, attr := range e.Attr {
 		err := decodeUserAttr(attr, u)

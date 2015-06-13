@@ -121,6 +121,7 @@ func validatePost(p *Post) {
 
 func decodePostRow(t xml.Token, p *Post) error {
 	// have been checked before that this is "row" element
+	*p = Post{}
 	e, _ := t.(xml.StartElement)
 	for _, attr := range e.Attr {
 		err := decodePostAttr(attr, p)

@@ -65,6 +65,7 @@ func decodeVoteAttr(attr xml.Attr, vote *Vote) error {
 
 func decodeVoteRow(t xml.Token, vote *Vote) error {
 	// have been checked before that this is "row" element
+	*vote = Vote{}
 	e, _ := t.(xml.StartElement)
 	for _, attr := range e.Attr {
 		err := decodeVoteAttr(attr, vote)

@@ -46,6 +46,7 @@ func decodePostLinkAttr(attr xml.Attr, l *PostLink) error {
 
 func decodePostLinkRow(t xml.Token, l *PostLink) error {
 	// have been checked before that this is "row" element
+	*l = PostLink{}
 	e, _ := t.(xml.StartElement)
 	for _, attr := range e.Attr {
 		err := decodePostLinkAttr(attr, l)
